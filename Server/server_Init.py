@@ -31,11 +31,11 @@ def set_Logger():
 
     fileLogger.addHandler(file_Handler)
     file_Formatter = logging.Formatter(
-        '%(asctime)s -   %(levelname)s   - %(message)s'
+        '%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] %(message)s'
     )
     file_Handler.setFormatter(file_Formatter)
 
-    fileLogger.info("Server Init - Logger Setting Complete.")
+    fileLogger.info("Logger Setting Complete.")
 
 def init_Server():
     # Logger Set
@@ -50,11 +50,16 @@ def init_Server():
             os.makedirs(CSV_DIR)
             os.makedirs(JSON_DIR)
         except OSError:
-            fileLogger.info("Server Init - Error in creating directory.")
+            fileLogger.info("Error in creating directory.")
 
     # DB Init(Table Check)
     if Database.check_Table() == False:
-        Database.create_Table()
-        fileLogger.error("Server Init - Flight Cache Table not exist. Create Table.")
+        fileLogger.info("Flight Cache Table not exist. Attemp to create table.")
+        dbCreated = Database.create_Table()
+        if dbCreated != True:
+            fileLogger.critical("Flight Cache Table create fail. Server Terminate.")
+            return
+        else:
+            fileLogger.info("Flight Cache Table success.")
     else:
-        fileLogger.info("Server Init - Flight Cache Table exist.")
+        fileLogger.info("Flight Cache Table exist.")

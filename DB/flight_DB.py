@@ -9,7 +9,7 @@ def con_DB():
     try:
         connector = sqlite3.connect(DB_PATH)
     except Exception as err:
-        fileLogger.critical("Database(con_DB) - " + str(err))
+        fileLogger.critical(str(err))
 
     return connector
 
@@ -23,7 +23,7 @@ def check_Table():
         cursor.execute(sql_Check)
         result = cursor.fetchone()
     except Exception as err:
-        fileLogger.critical("Database(check_Table) - " + str(err))
+        fileLogger.critical(str(err))
         return False
     
     if result[0] == 1:
@@ -47,7 +47,7 @@ def create_Table():
         connector.execute(sql_Create)
         connector.close()
     except Exception as err:
-        fileLogger.critical("Database(create_Table) - " + str(err))
+        fileLogger.critical(str(err))
         return False
     
     return True
@@ -68,7 +68,7 @@ def insert_Flight_Record(serial, time, lat, lng, filename):
         connector.commit()
         connector.close()
     except Exception as err:
-        fileLogger.critical("Database(insert_Flight_Record) - " + str(err))
+        fileLogger.critical(str(err))
         return False
 
     return True

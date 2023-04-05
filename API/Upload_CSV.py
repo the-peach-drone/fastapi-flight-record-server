@@ -20,12 +20,12 @@ CSV_DIR  = os.path.join(os.path.dirname(os.path.realpath(__main__.__file__)), "S
 async def csvUpload(user, csv: UploadFile = File(...)):
     # Check Filename
     if csv.filename == '':
-        fileLogger.error(f"{user} => Upload CSV - File Name Missing.")
+        fileLogger.error(f"{user} => File Name Missing.")
         raise HTTPException(status_code = 400, detail="File Name Missing.")
     
     # Check CSV
     if (not csv.filename.endswith(".csv")) and (not csv.filename.endswith(".CSV")):
-        fileLogger.error(f"{user} => Upload CSV - Not CSV File.")
+        fileLogger.error(f"{user} => Not CSV File.")
         raise HTTPException(status_code = 400, detail="Not CSV File.")
 
     # Generate File Name
@@ -37,8 +37,9 @@ async def csvUpload(user, csv: UploadFile = File(...)):
     try:
         with open(file_CSV, "wb+") as file_object:
             file_object.write(csv.file.read())
-    except EnvironmentError as err:
-        fileLogger.critical(f"{user} =>Upload CSV(CSV Save) - " + str(err))
+    except Exception as err:
+        fileLogger.critical(f"{user} => " + str(err))
+        raise HTTPException(status_code = 400, detail="Error in save CSV")
 
     # CSV convert to JSON
     csvTodict = []
@@ -47,15 +48,19 @@ async def csvUpload(user, csv: UploadFile = File(...)):
             csv_reader = CSV.DictReader(data_csv)
             for csvRows in csv_reader:
                 csvTodict.append(csvRows)
-    except EnvironmentError as err:
-        fileLogger.critical(f"{user} => Upload CSV(CSV convert to JSON) - "+ str(err))
+    except Exception as err:
+        fileLogger.critical(f"{user} => "+ str(err))
+        raise HTTPException(status_code = 400, detail="Error in convert JSON")
 
     # Make JSON Body
     coordMiddle_lat = csvTodict[int(len(csvTodict) / 2)]["latitude"]
     coordMiddle_lng = csvTodict[int(len(csvTodict) / 2)]["longitude"]
     output_Json = { 'serial_id' : user, 'incomming_time' : file_Time, 'middle_point' : { 'latitude' : coordMiddle_lat, 'longitude': coordMiddle_lng } ,'flight_record' :  csvTodict }
 
-    Database.insert_Flight_Record(user, file_Time, coordMiddle_lat, coordMiddle_lng, user + "-" + file_Time + ".json")
+    # Insert Cache DB
+    dbInserted = Database.insert_Flight_Record(user, file_Time, coordMiddle_lat, coordMiddle_lng, user + "-" + file_Time + ".json")
+    if dbInserted != True:
+        fileLogger.critical(f"{user} => Fail insert cache DB[{user} {file_Time} {coordMiddle_lat} {coordMiddle_lng} {user}-{file_Time}.json]. Please insert data later.")
 
     # Store to JSON
     try:
@@ -63,9 +68,10 @@ async def csvUpload(user, csv: UploadFile = File(...)):
             json_object = json.dumps(output_Json, indent = 4, ensure_ascii = True)
             data_json.write(json_object)
     except EnvironmentError as err:
-        fileLogger.critical(f"{user} => Upload CSV(Save JSON) - " + str(err))
+        fileLogger.critical(f"{user} => " + str(err))
+        raise HTTPException(status_code = 400, detail="Not CSV File.")
         
     # TODO : Send to another server
     
-    fileLogger.info(f"{user} => Upload CSV - Flight Record upload success.")
+    fileLogger.info(f"{user} => Flight Record upload success.")
     return 'CSV upload and Convert JSON Success.'
