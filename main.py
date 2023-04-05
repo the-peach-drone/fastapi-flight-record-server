@@ -29,6 +29,4 @@ def rootIndex():
 
 if __name__ == "__main__":
     server_Init.init_Server()
-    fileLogger.info("Main - File Server start.")
-    uvicorn.run(app, host="0.0.0.0", port=3333)
-    fileLogger.info("Main - uvicorn server end.")
+    uvicorn.run(app, host="0.0.0.0", port=5555)
