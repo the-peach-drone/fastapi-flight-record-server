@@ -1,0 +1,74 @@
+import os, logging, sqlite3, __main__
+
+DB_NAME = 'flight.db'
+DB_PATH = os.path.join(os.path.dirname(os.path.realpath(__main__.__file__)), "Storage", DB_NAME)
+fileLogger = logging.getLogger('ServerFileLog')
+
+def con_DB():
+    # DB connect
+    try:
+        connector = sqlite3.connect(DB_PATH)
+    except Exception as err:
+        fileLogger.critical("Database(con_DB) - " + str(err))
+
+    return connector
+
+def check_Table():
+    sql_Check = """
+                    SELECT COUNT(*) FROM sqlite_master Where name = "flightCache"
+                """
+    try:
+        connector = con_DB()
+        cursor = connector.cursor()
+        cursor.execute(sql_Check)
+        result = cursor.fetchone()
+    except Exception as err:
+        fileLogger.critical("Database(check_Table) - " + str(err))
+        return False
+    
+    if result[0] == 1:
+        return True
+    else:
+        return False
+
+def create_Table():
+    sql_Create = """
+                    CREATE TABLE flightCache (
+                        id             integer primary key,
+                        serial         text    not null,
+                        incomming_time text    not null,
+                        mid_lat        text    not null, 
+                        mid_lng        text    not null,
+                        flieName       text    not null
+                    )
+                 """
+    try:
+        connector = con_DB()
+        connector.execute(sql_Create)
+        connector.close()
+    except Exception as err:
+        fileLogger.critical("Database(create_Table) - " + str(err))
+        return False
+    
+    return True
+
+def insert_Flight_Record(serial, time, lat, lng, filename):
+    sql_Create = f"""
+                    INSERT INTO flightCache (serial, incomming_time, mid_lat, mid_lng, flieName) VALUES(
+                        '{serial}',
+                        '{time}',
+                        '{lat}', 
+                        '{lng}',
+                        '{filename}'
+                    )
+                 """
+    try:
+        connector = con_DB()
+        connector.execute(sql_Create)
+        connector.commit()
+        connector.close()
+    except Exception as err:
+        fileLogger.critical("Database(insert_Flight_Record) - " + str(err))
+        return False
+
+    return True
