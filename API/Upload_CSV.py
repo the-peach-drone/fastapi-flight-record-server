@@ -1,17 +1,17 @@
 from fastapi  import APIRouter, File, UploadFile, HTTPException
 from datetime import datetime
+from loguru   import logger
 
 import csv as CSV
-import os, json, logging
+import os, json
 
 import DB.flight_DB as Database
 import CONFIG.ServerConfig as Config
 
-# Logger
-fileLogger = logging.getLogger('ServerFileLog')
-
 # FastAPI Router
 router = APIRouter()
+
+# Server Setting
 settings = Config.Settings()
 
 # FastAPI Server Method
@@ -19,12 +19,12 @@ settings = Config.Settings()
 async def csvUpload(user, csv: UploadFile = File(...)):
     # Check Filename
     if csv.filename == '':
-        fileLogger.error(f"{user} => File Name Missing.")
+        logger.error(f"Upload CSV from {user} => File Name Missing.")
         raise HTTPException(status_code = 400, detail="File Name Missing.")
     
     # Check CSV
     if (not csv.filename.endswith(".csv")) and (not csv.filename.endswith(".CSV")):
-        fileLogger.error(f"{user} => Not CSV File.")
+        logger.error(f"Upload CSV from {user} => Not CSV File.")
         raise HTTPException(status_code = 400, detail="Not CSV File.")
 
     # Generate File Path
@@ -37,7 +37,7 @@ async def csvUpload(user, csv: UploadFile = File(...)):
         with open(file_CSV_Path, "wb+") as file_object:
             file_object.write(csv.file.read())
     except Exception as err:
-        fileLogger.critical(f"{user} => " + str(err))
+        logger.error(f"Upload CSV from {user} => " + str(err))
         raise HTTPException(status_code = 400, detail="Error in save CSV")
 
     # CSV convert to JSON
@@ -48,7 +48,7 @@ async def csvUpload(user, csv: UploadFile = File(...)):
             for csvRows in csv_reader:
                 csvTodict.append(csvRows)
     except Exception as err:
-        fileLogger.critical(f"{user} => "+ str(err))
+        logger.error(f"Upload CSV from {user} => " + str(err))
         raise HTTPException(status_code = 400, detail="Error in convert JSON")
 
     # Make JSON Body
@@ -59,7 +59,7 @@ async def csvUpload(user, csv: UploadFile = File(...)):
     # Insert Cache DB
     dbInserted = Database.insert_Flight_Record(user, file_Time, coordMiddle_lat, coordMiddle_lng, user + "-" + file_Time + ".json")
     if dbInserted != True:
-        fileLogger.critical(f"{user} => Fail insert cache DB[{user} {file_Time} {coordMiddle_lat} {coordMiddle_lng} {user}-{file_Time}.json]. Please insert data later.")
+        logger.critical(f"Upload CSV from {user} => Insert DB Fail. [{user}|{file_Time}|{coordMiddle_lat}|{coordMiddle_lng}|{user}-{file_Time}.json].")
 
     # Store to JSON
     try:
@@ -67,10 +67,10 @@ async def csvUpload(user, csv: UploadFile = File(...)):
             json_object = json.dumps(output_Json, indent = 4, ensure_ascii = True)
             data_json.write(json_object)
     except Exception as err:
-        fileLogger.critical(f"{user} => " + str(err))
-        raise HTTPException(status_code = 400, detail="Not CSV File.")
+        logger.error(f"Upload CSV from {user} => " + str(err))
+        raise HTTPException(status_code = 400, detail="Fail to store json.")
         
     # TODO : Send to another server
     
-    fileLogger.info(f"{user} => Flight Record upload success.")
+    logger.success(f"Upload CSV from {user} => Success....")
     return 'CSV upload and Convert JSON Success.'

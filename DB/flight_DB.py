@@ -1,16 +1,15 @@
-import logging, sqlite3
+from loguru import logger
+import sqlite3
 import CONFIG.ServerConfig as Config
 
 settings = Config.Settings()
-
-fileLogger = logging.getLogger('ServerFileLog')
 
 def con_DB():
     # DB connect
     try:
         connector = sqlite3.connect(settings.DB_PATH)
     except Exception as err:
-        fileLogger.critical(str(err))
+        logger.error(str(err))
 
     return connector
 
@@ -24,7 +23,7 @@ def check_Table():
         cursor.execute(sql_Check)
         result = cursor.fetchone()
     except Exception as err:
-        fileLogger.critical(str(err))
+        logger.error(str(err))
         return False
     
     if result[0] == 1:
@@ -48,7 +47,7 @@ def create_Table():
         connector.execute(sql_Create)
         connector.close()
     except Exception as err:
-        fileLogger.critical(str(err))
+        logger.error(str(err))
         return False
     
     return True
@@ -69,7 +68,7 @@ def insert_Flight_Record(serial, time, lat, lng, filename):
         connector.commit()
         connector.close()
     except Exception as err:
-        fileLogger.critical(str(err))
+        logger.error(str(err))
         return False
 
     return True
