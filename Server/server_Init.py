@@ -24,6 +24,8 @@ def init_Server():
     # Loguru file handler add
     logger.add(sink=settings.LOG_FILENAME, format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level} | {name}:{function}:{line} - {message}", rotation="12:00")
 
+    logger.info("Server Init Start...")
+
     # Upload Dir Check
     if not os.path.exists(settings.STORAGE_PATH):
         # Try to make directory
@@ -36,16 +38,16 @@ def init_Server():
             return False
 
     # DB Init(Table Check)
-    logger.info("Check SQLite3 Table....")
+    logger.info("Check Flight Cache Table...")
     if Database.check_Table() == False:
         logger.error("Flight Cache Table not exist. Attemp to create table.")
         dbCreated = Database.create_Table()
         if dbCreated != True:
-            logger.critical("Flight Cache Table create fail. Server Terminate.")
+            logger.critical("Flight Cache Table create fail.")
             return False
         else:
-            logger.info("Flight Cache Table success.")
+            logger.success("Flight Cache Table create success.")
             return True
     else:
-        logger.info("Flight Cache Table exist.")
+        logger.success("Flight Cache Table check success.")
         return True
