@@ -1,3 +1,6 @@
 LOG/
 Storage/
+CONFIG/
+__pycache__/
 *.pyc
+*.sh

@@ -2,18 +2,17 @@ from fastapi  import APIRouter, File, UploadFile, HTTPException
 from datetime import datetime
 
 import csv as CSV
-import os, json, __main__, logging
+import os, json, logging
 
 import DB.flight_DB as Database
+import CONFIG.ServerConfig as Config
 
 # Logger
 fileLogger = logging.getLogger('ServerFileLog')
 
 # FastAPI Router
 router = APIRouter()
-
-JSON_DIR = os.path.join(os.path.dirname(os.path.realpath(__main__.__file__)), "Storage", "JSON")
-CSV_DIR  = os.path.join(os.path.dirname(os.path.realpath(__main__.__file__)), "Storage", "CSV")
+settings = Config.Settings()
 
 # FastAPI Server Method
 @router.post("/upload_csv/{user}")
@@ -30,8 +29,8 @@ async def csvUpload(user, csv: UploadFile = File(...)):
 
     # Generate File Name
     file_Time = datetime.now().strftime('%Y%m%d%H%M%S')
-    file_CSV = os.path.join(CSV_DIR, user + "-" + file_Time + ".csv")
-    file_JSON = os.path.join(JSON_DIR, user + "-" + file_Time + ".json")
+    file_CSV = os.path.join(settings.CSV_PATH, user + "-" + file_Time + ".csv")
+    file_JSON = os.path.join(settings.JSON_PATH, user + "-" + file_Time + ".json")
 
     # Save CSV
     try:
@@ -67,7 +66,7 @@ async def csvUpload(user, csv: UploadFile = File(...)):
         with open(file_JSON, 'wt', encoding='UTF-8') as data_json:
             json_object = json.dumps(output_Json, indent = 4, ensure_ascii = True)
             data_json.write(json_object)
-    except EnvironmentError as err:
+    except Exception as err:
         fileLogger.critical(f"{user} => " + str(err))
         raise HTTPException(status_code = 400, detail="Not CSV File.")
         

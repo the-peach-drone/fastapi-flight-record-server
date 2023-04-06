@@ -1,13 +1,14 @@
-import os, logging, sqlite3, __main__
+import logging, sqlite3
+import CONFIG.ServerConfig as Config
 
-DB_NAME = 'flight.db'
-DB_PATH = os.path.join(os.path.dirname(os.path.realpath(__main__.__file__)), "Storage", DB_NAME)
+settings = Config.Settings()
+
 fileLogger = logging.getLogger('ServerFileLog')
 
 def con_DB():
     # DB connect
     try:
-        connector = sqlite3.connect(DB_PATH)
+        connector = sqlite3.connect(settings.DB_PATH)
     except Exception as err:
         fileLogger.critical(str(err))
 

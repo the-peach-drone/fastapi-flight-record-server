@@ -1,21 +1,16 @@
-import os, sys, logging, logging.handlers, __main__
-
+import os, logging, logging.handlers
 import DB.flight_DB as Database
+import CONFIG.ServerConfig as Config
 
-MAIN_PATH = os.path.dirname(os.path.realpath(__main__.__file__))
+settings = Config.Settings()
 
-LOG_PATH     = os.path.join(MAIN_PATH, "LOG")
-STORAGE_PATH = os.path.join(MAIN_PATH, "Storage")
-JSON_DIR     = os.path.join(STORAGE_PATH, "JSON")
-CSV_DIR      = os.path.join(STORAGE_PATH, "CSV")
-
-LOG_FILENAME = os.path.join(LOG_PATH, 'FileServer.log')
+LOG_FILENAME = os.path.join(settings.LOG_PATH, 'FileServer.log')
 
 def set_Logger():
     # Check Log Directory
-    if not os.path.exists(LOG_PATH):
+    if not os.path.exists(settings.LOG_PATH):
         try:
-            os.makedirs(LOG_PATH)
+            os.makedirs(settings.LOG_PATH)
         except OSError:
             print("Error in creating dir")
             return
@@ -43,12 +38,12 @@ def init_Server():
     fileLogger = logging.getLogger('ServerFileLog')
 
     # Upload Dir Check
-    if not os.path.exists(STORAGE_PATH):
+    if not os.path.exists(settings.STORAGE_PATH):
         # Try to make directory
         try:
-            os.makedirs(STORAGE_PATH)
-            os.makedirs(CSV_DIR)
-            os.makedirs(JSON_DIR)
+            os.makedirs(settings.STORAGE_PATH)
+            os.makedirs(settings.CSV_PATH)
+            os.makedirs(settings.JSON_PATH)
         except OSError:
             fileLogger.info("Error in creating directory.")
 
