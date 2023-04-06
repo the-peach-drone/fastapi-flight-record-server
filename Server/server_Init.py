@@ -1,20 +1,28 @@
 from loguru import logger
-import os, logging
+import os, sys, logging
 import DB.flight_DB as Database
 import CONFIG.ServerConfig as Config
 
 settings = Config.Settings()
 
 def init_Server():
+    # Python Version Check
+    logger.info("Python version check... => " + sys.version)
+    if sys.version_info.major < 3: # Python 2
+        logger.error("Please use Python 3.8 over")
+        return False
+    if sys.version_info.minor < 8: # Under Python 3.8
+        logger.error("Please use Python 3.8 over")
+        return False
+    
     # Logger Set
-    # Check Log Directory
-    if not os.path.exists(settings.LOG_PATH):
+    if not os.path.exists(settings.LOG_PATH): # Check Log Directory
         try:
             os.makedirs(settings.LOG_PATH)
         except OSError as err:
             logger.critical(f"Error in creating log directory. - {err}")
             return False
-        
+
     # Disable uvicorn logger
     uvicorn_error = logging.getLogger("uvicorn.error")
     uvicorn_access = logging.getLogger("uvicorn.access")
