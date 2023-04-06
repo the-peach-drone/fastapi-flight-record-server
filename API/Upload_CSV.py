@@ -27,14 +27,14 @@ async def csvUpload(user, csv: UploadFile = File(...)):
         fileLogger.error(f"{user} => Not CSV File.")
         raise HTTPException(status_code = 400, detail="Not CSV File.")
 
-    # Generate File Name
-    file_Time = datetime.now().strftime('%Y%m%d%H%M%S')
-    file_CSV = os.path.join(settings.CSV_PATH, user + "-" + file_Time + ".csv")
-    file_JSON = os.path.join(settings.JSON_PATH, user + "-" + file_Time + ".json")
+    # Generate File Path
+    file_Time      = datetime.now().strftime('%Y%m%d%H%M%S')
+    file_CSV_Path  = os.path.join(settings.CSV_DIR_PATH, user + "-" + file_Time + ".csv")
+    file_JSON_Path = os.path.join(settings.JSON_DIR_PATH, user + "-" + file_Time + ".json")
 
     # Save CSV
     try:
-        with open(file_CSV, "wb+") as file_object:
+        with open(file_CSV_Path, "wb+") as file_object:
             file_object.write(csv.file.read())
     except Exception as err:
         fileLogger.critical(f"{user} => " + str(err))
@@ -43,7 +43,7 @@ async def csvUpload(user, csv: UploadFile = File(...)):
     # CSV convert to JSON
     csvTodict = []
     try:
-        with open(file_CSV, 'rt', encoding='UTF-8') as data_csv:
+        with open(file_CSV_Path, 'rt', encoding='UTF-8') as data_csv:
             csv_reader = CSV.DictReader(data_csv)
             for csvRows in csv_reader:
                 csvTodict.append(csvRows)
@@ -63,7 +63,7 @@ async def csvUpload(user, csv: UploadFile = File(...)):
 
     # Store to JSON
     try:
-        with open(file_JSON, 'wt', encoding='UTF-8') as data_json:
+        with open(file_JSON_Path, 'wt', encoding='UTF-8') as data_json:
             json_object = json.dumps(output_Json, indent = 4, ensure_ascii = True)
             data_json.write(json_object)
     except Exception as err:
