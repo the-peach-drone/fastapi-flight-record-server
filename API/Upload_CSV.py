@@ -16,7 +16,7 @@ settings = Config.Settings()
 
 # FastAPI Server Method
 @router.post("/upload_csv/{user}")
-async def csvUpload(user, csv: UploadFile = File(...)):
+def csvUpload(user, csv: UploadFile = File(...)):
     # Check Filename
     if csv.filename == '':
         logger.error(f"Upload CSV from {user} => File Name Missing.")
@@ -74,7 +74,7 @@ async def csvUpload(user, csv: UploadFile = File(...)):
     # TODO : Send to another server
     post_Result = httpx.post(settings.POST_URL, json = json_object)
     if post_Result.status_code != httpx.codes.OK:
-        logger.error(f"HTTP POST to Web Service => Fail..." + post_Result.text)
+        logger.error(f"HTTP POST to Web Service => Fail...." + post_Result.text)
     else:
         logger.success(f"HTTP POST to Web Service => Success....")
     
