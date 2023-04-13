@@ -13,3 +13,6 @@ class Settings(BaseSettings):
     STORAGE_PATH  = os.path.join(MAIN_PATH,    "Storage")
     JSON_DIR_PATH = os.path.join(STORAGE_PATH, "JSON")
     CSV_DIR_PATH  = os.path.join(STORAGE_PATH, "CSV")
+
+    # POST URL Setting
+    POST_URL = "http://127.0.0.1:11111/upload_json"

@@ -3,7 +3,7 @@ from datetime import datetime
 from loguru   import logger
 
 import csv as CSV
-import os, json
+import os, json, httpx
 
 import DB.flight_DB as Database
 import CONFIG.ServerConfig as Config
@@ -62,6 +62,7 @@ async def csvUpload(user, csv: UploadFile = File(...)):
         logger.critical(f"Upload CSV from {user} => Insert DB Fail. [{user}|{file_Time}|{coordMiddle_lat}|{coordMiddle_lng}|{user}-{file_Time}.json].")
 
     # Store to JSON
+    json_object = None
     try:
         with open(file_JSON_Path, 'wt', encoding='UTF-8') as data_json:
             json_object = json.dumps(output_Json, indent = 4, ensure_ascii = True)
@@ -71,6 +72,11 @@ async def csvUpload(user, csv: UploadFile = File(...)):
         raise HTTPException(status_code = 400, detail="Fail to store json.")
         
     # TODO : Send to another server
+    post_Result = httpx.post(settings.POST_URL, json = json_object)
+    if post_Result.status_code != httpx.codes.OK:
+        logger.error(f"HTTP POST to Web Service => Fail..." + post_Result.text)
+    else:
+        logger.success(f"HTTP POST to Web Service => Success....")
     
     logger.success(f"Upload CSV from {user} => Success....")
     return 'CSV upload and Convert JSON Success.'
