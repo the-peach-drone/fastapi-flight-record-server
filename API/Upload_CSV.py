@@ -16,7 +16,7 @@ settings = Config.Settings()
 
 # FastAPI Server Method
 @router.post("/upload_csv/{user}")
-def csvUpload(user, csv: UploadFile = File(...)):
+async def csvUpload(user, csv: UploadFile = File(...)):
     # Check Filename
     if csv.filename == '':
         logger.error(f"Upload CSV from {user} => File Name Missing.")
@@ -52,9 +52,13 @@ def csvUpload(user, csv: UploadFile = File(...)):
         raise HTTPException(status_code = 400, detail="Error in convert JSON")
 
     # Make JSON Body
-    coordMiddle_lat = csvTodict[int(len(csvTodict) / 2)]["latitude"]
-    coordMiddle_lng = csvTodict[int(len(csvTodict) / 2)]["longitude"]
-    output_Json = { 'serial_id' : user, 'incomming_time' : file_Time, 'middle_point' : { 'latitude' : coordMiddle_lat, 'longitude': coordMiddle_lng } ,'flight_record' :  csvTodict }
+    try:
+        coordMiddle_lat = csvTodict[int(len(csvTodict) / 2)]["latitude"]
+        coordMiddle_lng = csvTodict[int(len(csvTodict) / 2)]["longitude"]
+        output_Json = { 'serial_id' : user, 'incomming_time' : file_Time, 'middle_point' : { 'latitude' : coordMiddle_lat, 'longitude': coordMiddle_lng } ,'flight_record' :  csvTodict }
+    except Exception as err:
+        logger.error(f"Make json from {user} => " + str(err))
+        raise HTTPException(status_code = 503, detail="Error in make JSON")
 
     # Insert Cache DB
     dbInserted = Database.insert_Flight_Record(user, file_Time, coordMiddle_lat, coordMiddle_lng, user + "-" + file_Time + ".json")
