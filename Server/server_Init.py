@@ -1,4 +1,5 @@
 from loguru import logger
+from Server.custom_logger import CustomizeLogger
 import os, sys, logging
 import DB.flight_DB as Database
 import CONFIG.ServerConfig as Config
@@ -6,8 +7,12 @@ import CONFIG.ServerConfig as Config
 settings = Config.Settings()
 
 def init_Server():
+    # Logger set
+    config_path = os.path.join(settings.MAIN_PATH, "Server", "logging_config.json")
+    logger = CustomizeLogger.make_logger(config_path)
+
     # Python Version Check
-    logger.info("Python version check... => " + sys.version)
+    logger.info("Python version check... => " + str(sys.version_info.major) + "." + str(sys.version_info.minor) + "." + str(sys.version_info.micro))
     if sys.version_info.major < 3: # Python 2
         logger.error("Please use Python 3.8 over")
         return False
@@ -26,11 +31,8 @@ def init_Server():
     # Disable uvicorn logger
     uvicorn_error = logging.getLogger("uvicorn.error")
     uvicorn_access = logging.getLogger("uvicorn.access")
-    uvicorn_error.disabled = True
-    uvicorn_access.disabled = True
-
-    # Loguru file handler add
-    logger.add(sink=settings.LOG_FILENAME, format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level} | {name}:{function}:{line} - {message}", rotation="12:00")
+    uvicorn_error.propagate = False
+    uvicorn_access.propagate = False
 
     logger.info("Server Init Start...")
 
