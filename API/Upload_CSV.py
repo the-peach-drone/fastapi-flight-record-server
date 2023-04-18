@@ -71,12 +71,16 @@ def csvUpload(user, csv: UploadFile = File(...)):
         logger.error(f"Upload CSV from {user} => " + str(err))
         raise HTTPException(status_code = 400, detail="Fail to store json.")
         
-    # TODO : Send to another server
-    post_Result = httpx.post(settings.POST_URL, json = json_object)
+    # httpx send http post for call another api
+    post_Result = httpx.post(settings.POST_URL, json = json.loads(json_object))
     if post_Result.status_code != httpx.codes.OK:
         logger.error(f"HTTP POST to Web Service => Fail...." + post_Result.text)
     else:
-        logger.success(f"HTTP POST to Web Service => Success....")
+        response_Error = json.loads(post_Result.text)['error']
+        if(response_Error == ''):
+            logger.success(f"HTTP POST to Web Service => Success....")
+        else:
+            logger.error(f"HTTP POST to Web Service => Fail...." + response_Error)
     
     logger.success(f"Upload CSV from {user} => Success....")
     return 'CSV upload and Convert JSON Success.'
