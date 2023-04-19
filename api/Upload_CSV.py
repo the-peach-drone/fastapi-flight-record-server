@@ -79,15 +79,15 @@ async def csvUpload(user, csv: UploadFile = File(...)):
         raise HTTPException(status_code = 400, detail="Fail to store json.")
         
     # httpx send http post for call another api
-    # post_Result = httpx.post(settings.POST_URL, json = json.loads(json_object))
-    # if post_Result.status_code != httpx.codes.OK:
-    #     logger.error(f"HTTP POST to Web Service({user}) => Fail...." + post_Result.text)
-    # else:
-    #     response_Error = json.loads(post_Result.text)['error']
-    #     if(response_Error == ''):
-    #         logger.success(f"HTTP POST to Web Service({user}) => Success....")
-    #     else:
-    #         logger.error(f"HTTP POST to Web Service({user}) => Fail...." + response_Error)
+    post_Result = httpx.post(settings.POST_URL, json = json.loads(json_object))
+    if post_Result.status_code != httpx.codes.OK:
+        logger.error(f"HTTP POST to Web Service({user}) => Fail...." + post_Result.text)
+    else:
+        response_Error = json.loads(post_Result.text)['error']
+        if(response_Error == ''):
+            logger.success(f"HTTP POST to Web Service({user}) => Success....")
+        else:
+            logger.error(f"HTTP POST to Web Service({user}) => Fail...." + response_Error)
     
     logger.success(f"Upload CSV from {user} => Success....")
     return 'CSV upload and Convert JSON Success.'
