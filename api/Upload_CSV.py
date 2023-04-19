@@ -5,8 +5,8 @@ from loguru   import logger
 import csv as CSV
 import os, json, httpx
 
-import DB.flight_DB as Database
-import CONFIG.ServerConfig as Config
+import db.flight_DB as Database
+import core.ServerConfig as Config
 
 # FastAPI Router
 router = APIRouter()
@@ -14,7 +14,7 @@ router = APIRouter()
 # Server Setting
 settings = Config.Settings()
 
-# FastAPI Server Method
+# Upload Flight record
 @router.post("/upload_csv/{user}")
 async def csvUpload(user, csv: UploadFile = File(...)):
     # Check Filename
@@ -32,10 +32,13 @@ async def csvUpload(user, csv: UploadFile = File(...)):
     file_CSV_Path  = os.path.join(settings.CSV_DIR_PATH, user + "-" + file_Time + ".csv")
     file_JSON_Path = os.path.join(settings.JSON_DIR_PATH, user + "-" + file_Time + ".json")
 
+    # Read csv request
+    file_CSV = csv.file.read()
+
     # Save CSV
     try:
         with open(file_CSV_Path, "wb+") as file_object:
-            file_object.write(csv.file.read())
+            file_object.write(file_CSV)
     except Exception as err:
         logger.error(f"Upload CSV from {user} => " + str(err))
         raise HTTPException(status_code = 400, detail="Error in save CSV")
@@ -76,15 +79,15 @@ async def csvUpload(user, csv: UploadFile = File(...)):
         raise HTTPException(status_code = 400, detail="Fail to store json.")
         
     # httpx send http post for call another api
-    post_Result = httpx.post(settings.POST_URL, json = json.loads(json_object))
-    if post_Result.status_code != httpx.codes.OK:
-        logger.error(f"HTTP POST to Web Service => Fail...." + post_Result.text)
-    else:
-        response_Error = json.loads(post_Result.text)['error']
-        if(response_Error == ''):
-            logger.success(f"HTTP POST to Web Service => Success....")
-        else:
-            logger.error(f"HTTP POST to Web Service => Fail...." + response_Error)
+    # post_Result = httpx.post(settings.POST_URL, json = json.loads(json_object))
+    # if post_Result.status_code != httpx.codes.OK:
+    #     logger.error(f"HTTP POST to Web Service({user}) => Fail...." + post_Result.text)
+    # else:
+    #     response_Error = json.loads(post_Result.text)['error']
+    #     if(response_Error == ''):
+    #         logger.success(f"HTTP POST to Web Service({user}) => Success....")
+    #     else:
+    #         logger.error(f"HTTP POST to Web Service({user}) => Fail...." + response_Error)
     
     logger.success(f"Upload CSV from {user} => Success....")
     return 'CSV upload and Convert JSON Success.'

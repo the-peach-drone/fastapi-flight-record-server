@@ -1,6 +1,7 @@
-CONFIG/config.json
-LOG/
+core/config.json
+log/
 Storage/
 __pycache__/
 *.pyc
 *.sh
+*.swp

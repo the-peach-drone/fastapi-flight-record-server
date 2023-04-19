@@ -1,14 +1,14 @@
 from loguru import logger
-from Server.custom_logger import CustomizeLogger
+from core.custom_logger import CustomizeLogger
 import os, sys, logging
-import DB.flight_DB as Database
-import CONFIG.ServerConfig as Config
+import db.flight_DB as Database
+import core.ServerConfig as Config
 
 settings = Config.Settings()
 
 def init_Server():
     # Logger set
-    config_path = os.path.join(settings.MAIN_PATH, "Server", "logging_config.json")
+    config_path = os.path.join(settings.MAIN_PATH, "core", "logging_config.json")
     logger = CustomizeLogger.make_logger(config_path)
 
     # Python Version Check
@@ -33,8 +33,6 @@ def init_Server():
     uvicorn_access = logging.getLogger("uvicorn.access")
     uvicorn_error.propagate = False
     uvicorn_access.propagate = False
-
-    logger.info("Server Init Start...")
 
     # Upload Dir Check
     if not os.path.exists(settings.STORAGE_PATH):

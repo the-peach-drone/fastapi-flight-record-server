@@ -1,6 +1,6 @@
 from loguru import logger
 import sqlite3
-import CONFIG.ServerConfig as Config
+import core.ServerConfig as Config
 
 settings = Config.Settings()
 
