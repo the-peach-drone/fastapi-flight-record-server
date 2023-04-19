@@ -1,7 +1,7 @@
 from pathlib import Path
 from loguru import logger
-import core.ServerConfig as Config
 
+import core.config as Config
 import logging, sys, json
 
 # Server Setting

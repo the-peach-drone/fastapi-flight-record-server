@@ -1,6 +1,6 @@
 core/config.json
 log/
-Storage/
+storage/
 __pycache__/
 *.pyc
 *.sh

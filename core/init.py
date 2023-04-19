@@ -1,14 +1,15 @@
 from loguru import logger
-from core.custom_logger import CustomizeLogger
-import os, sys, logging
-import db.flight_DB as Database
-import core.ServerConfig as Config
+from core.logger import CustomizeLogger
 
-settings = Config.Settings()
+import os, sys, logging
+import db.table    as table
+import core.config as config
+
+settings = config.Settings()
 
 def init_Server():
     # Logger set
-    config_path = os.path.join(settings.MAIN_PATH, "core", "logging_config.json")
+    config_path = os.path.join(settings.MAIN_PATH, "core", "logger_config.json")
     logger = CustomizeLogger.make_logger(config_path)
 
     # Python Version Check
@@ -47,9 +48,9 @@ def init_Server():
 
     # DB Init(Table Check)
     logger.info("Check Flight Cache Table...")
-    if Database.check_Table() == False:
+    if table.check_Table() == False:
         logger.error("Flight Cache Table not exist. Attemp to create table.")
-        dbCreated = Database.create_Table()
+        dbCreated = table.create_Table()
         if dbCreated != True:
             logger.critical("Flight Cache Table create fail.")
             return False

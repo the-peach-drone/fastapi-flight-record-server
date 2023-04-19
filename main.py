@@ -3,14 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from loguru                  import logger
 
 import uvicorn
-import api.Upload_CSV as UploadAPI
-import core.server_Init as server_Init
+import api.upload as upload
+import core.init  as init
 
 # App init
 app = FastAPI()
 
 # Add API router
-app.include_router(UploadAPI.router)
+app.include_router(upload.router)
 
 # CORS SET
 app.add_middleware(
@@ -34,7 +34,7 @@ def rootIndex():
     return "Please read API docs."
 
 if __name__ == "__main__":
-    isInited = server_Init.init_Server()
+    isInited = init.init_Server()
     if not isInited:
         logger.critical("server init failed. Please check log.")
     else:

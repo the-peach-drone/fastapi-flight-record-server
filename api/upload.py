@@ -5,14 +5,14 @@ from loguru   import logger
 import csv as CSV
 import os, json, httpx
 
-import db.flight_DB as Database
-import core.ServerConfig as Config
+import db.insert   as insert
+import core.config as config
 
 # FastAPI Router
 router = APIRouter()
 
 # Server Setting
-settings = Config.Settings()
+settings = config.Settings()
 
 # Upload Flight record
 @router.post("/upload_csv/{user}")
@@ -64,7 +64,7 @@ async def csvUpload(user, csv: UploadFile = File(...)):
         raise HTTPException(status_code = 503, detail="Error in make JSON")
 
     # Insert Cache DB
-    dbInserted = Database.insert_Flight_Record(user, file_Time, coordMiddle_lat, coordMiddle_lng, user + "-" + file_Time + ".json")
+    dbInserted = insert.insert_Flight_Record(user, file_Time, coordMiddle_lat, coordMiddle_lng, user + "-" + file_Time + ".json")
     if dbInserted != True:
         logger.critical(f"Upload CSV from {user} => Insert DB Fail. [{user}|{file_Time}|{coordMiddle_lat}|{coordMiddle_lng}|{user}-{file_Time}.json].")
 
