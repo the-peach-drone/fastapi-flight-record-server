@@ -80,14 +80,14 @@ class threadQueue(threading.Thread):
             logger.exception(f"Upload CSV from {user} => " + str(err))
 
         # httpx send http post for call another api
-        # post_Result = httpx.post(settings.POST_URL, json = json.loads(json_object))
-        # if post_Result.status_code != httpx.codes.OK:
-        #     logger.error(f"HTTP POST to Web Service({user}) => Fail...." + post_Result.text)
-        # else:
-        #     response_Error = json.loads(post_Result.text)['error']
-        #     if(response_Error == ''):
-        #         logger.success(f"HTTP POST to Web Service({user}) => Success....")
-        #     else:
-        #         logger.error(f"HTTP POST to Web Service({user}) => Fail...." + response_Error)
+        post_Result = httpx.post(settings.POST_URL, json = json.loads(json_object))
+        if post_Result.status_code != httpx.codes.OK:
+            logger.error(f"HTTP POST to Web Service({user}) => Fail...." + post_Result.text)
+        else:
+            response_Error = json.loads(post_Result.text)['error']
+            if(response_Error == ''):
+                logger.success(f"HTTP POST to Web Service({user}) => Success....")
+            else:
+                logger.error(f"HTTP POST to Web Service({user}) => Fail...." + response_Error)
 
         logger.success(f"Upload CSV from {user} => Success....")
