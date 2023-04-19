@@ -1,11 +1,11 @@
-from pathlib import Path
-from loguru import logger
+from pathlib     import Path
+from loguru      import logger
+from core.config import Settings
 
-import core.config as Config
 import logging, sys, json
 
 # Server Setting
-settings = Config.Settings()
+settings = Settings()
 
 class InterceptHandler(logging.Handler):
     loglevel_mapping = {

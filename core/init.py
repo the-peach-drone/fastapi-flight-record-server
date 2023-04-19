@@ -1,11 +1,12 @@
-from loguru import logger
 from core.logger import CustomizeLogger
+from db.table    import check_Table
+from db.table    import create_Table
+from core.config import Settings
 
 import os, sys, logging
-import db.table    as table
-import core.config as config
 
-settings = config.Settings()
+# Server Setting
+settings = Settings()
 
 def init_Server():
     # Logger set
@@ -48,9 +49,9 @@ def init_Server():
 
     # DB Init(Table Check)
     logger.info("Check Flight Cache Table...")
-    if table.check_Table() == False:
+    if check_Table() == False:
         logger.error("Flight Cache Table not exist. Attemp to create table.")
-        dbCreated = table.create_Table()
+        dbCreated = create_Table()
         if dbCreated != True:
             logger.critical("Flight Cache Table create fail.")
             return False

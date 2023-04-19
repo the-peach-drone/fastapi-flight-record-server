@@ -1,16 +1,16 @@
-from loguru import logger
+from loguru       import logger
+from core.config  import Settings
+from db.connector import con_DB
 
-import core.config  as config
-import db.connector as connector
-
-settings = config.Settings()
+# Server Setting
+settings = Settings()
 
 def check_Table():
     sql_Check = """
                     SELECT COUNT(*) FROM sqlite_master Where name = "flightCache"
                 """
     try:
-        con = connector.con_DB()
+        con    = con_DB()
         cursor = con.cursor()
         cursor.execute(sql_Check)
         result = cursor.fetchone()
@@ -35,7 +35,7 @@ def create_Table():
                     )
                  """
     try:
-        con = connector.con_DB()
+        con = con_DB()
         con.execute(sql_Create)
         con.close()
     except Exception as err:

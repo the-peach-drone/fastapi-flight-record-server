@@ -1,8 +1,10 @@
-from loguru import logger
-import sqlite3
-import core.config as Config
+from loguru      import logger
+from core.config import Settings
 
-settings = Config.Settings()
+import sqlite3
+
+# Server Setting
+settings = Settings()
 
 def con_DB():
     # DB connect
