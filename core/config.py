@@ -24,4 +24,4 @@ class Settings(BaseSettings):
     POST_URL = config["api_url"]
 
     # POST TEST MODE
-    SERVER_TEST_MODE = True
+    SERVER_TEST_MODE = config["test_mode"]
