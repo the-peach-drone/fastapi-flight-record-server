@@ -50,4 +50,4 @@ if __name__ == "__main__":
         logger.critical("server init failed. Please check log.")
     else:
         # Do not run with reload option
-        uvicorn.run("main:app", host="0.0.0.0", port=5555)
+        uvicorn.run("main:app", host="0.0.0.0", port=5555, access_log=False)
