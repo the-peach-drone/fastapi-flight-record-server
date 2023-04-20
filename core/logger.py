@@ -35,13 +35,17 @@ class CustomizeLogger:
     @classmethod
     def make_logger(cls, config_path: Path):
 
+        # Disable uvicorn logger
+        uvicorn_error = logging.getLogger("uvicorn.error")
+        uvicorn_error.propagate = False
+
         config = cls.load_logging_config(config_path)
         logging_config = config.get('logger')
 
         logger = cls.customize_logging(
-            level=logging_config.get('level'),
-            rotation=logging_config.get('rotation'),
-            format=logging_config.get('format')
+            level    = logging_config.get('level'),
+            rotation = logging_config.get('rotation'),
+            format   = logging_config.get('format')
         )
         return logger
 
@@ -49,13 +53,11 @@ class CustomizeLogger:
     def customize_logging(cls, level: str, rotation: str, format: str):
         logger.remove() # Remove default logger
         
-        logger.add(sys.stdout, enqueue = True, backtrace = True, level = level.upper(), format = format)                                 # Add stdout logger
-        logger.add(settings.LOG_FILENAME, rotation = rotation, enqueue = True, backtrace = True, level = level.upper(), format = format) # Add file logger
+        logger.add(sys.stdout, enqueue = True, backtrace = True, level = level.upper(), format = format)                                  # Add stdout logger
+        logger.add(settings.LOG_FILENAME, rotation = rotation, enqueue = True, backtrace = True, level = level.upper(), format = format)  # Add file logger
         logging.basicConfig( handlers = [ InterceptHandler() ], level = 0 )
-        logging.getLogger("uvicorn.access").handlers = [ InterceptHandler() ] # uvicorn access handler catch
-        logging.getLogger("uvicorn.error").handlers  = [ InterceptHandler() ] # uvicorn error handler catch
 
-        return logger.bind(request_id = None, method = None)
+        return logger.bind(request_id = 'app', method = None)
 
     @classmethod
     def load_logging_config(cls, config_path):

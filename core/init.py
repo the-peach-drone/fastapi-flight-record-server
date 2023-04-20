@@ -3,7 +3,7 @@ from db.table    import check_Table
 from db.table    import create_Table
 from core.config import Settings
 
-import os, sys, logging
+import os, sys
 
 # Server Setting
 settings = Settings()
@@ -27,14 +27,8 @@ def init_Server():
         try:
             os.makedirs(settings.LOG_PATH)
         except OSError as err:
-            logger.critical(f"Error in creating log directory. - {err}")
+            logger.exception(f"Error in creating log directory. - {err}")
             return False
-
-    # Disable uvicorn logger
-    uvicorn_error = logging.getLogger("uvicorn.error")
-    uvicorn_access = logging.getLogger("uvicorn.access")
-    uvicorn_error.propagate = False
-    uvicorn_access.propagate = False
 
     # Upload Dir Check
     if not os.path.exists(settings.STORAGE_PATH):
@@ -44,7 +38,7 @@ def init_Server():
             os.makedirs(settings.CSV_DIR_PATH)
             os.makedirs(settings.JSON_DIR_PATH)
         except OSError as err:
-            logger.error(f"Error in creating directory. - {err}")
+            logger.exception(f"Error in creating directory. - {err}")
             return False
 
     # DB Init(Table Check)
