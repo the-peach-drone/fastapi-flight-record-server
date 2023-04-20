@@ -3,7 +3,7 @@ from core.config import Settings
 from db.insert   import insert_Flight_Record
 
 import time, threading, queue
-import os, json, httpx, csv
+import io, os, json, httpx, csv
 
 # Server Setting
 settings = Settings()
@@ -38,50 +38,52 @@ class threadQueue(threading.Thread):
         file_CSV_Path  = os.path.join(settings.CSV_DIR_PATH, user + "-" + time + ".csv")
         file_JSON_Path = os.path.join(settings.JSON_DIR_PATH, user + "-" + time + ".json")
 
+        # csv data decode
         record = byte.decode('utf-8')
+        csv_data = io.StringIO(record)
 
-        # Save csv
+        # Save flight record(CSV)
         try:
             with open(file_CSV_Path, "w+") as csv_File:
                 csv_File.write(record)
         except Exception as err:
             logger.exception(f"Upload CSV from {user} => " + str(err))
 
-        # Convert csv to dict
-        csvTodict = []
+        # Convert csv to list
         try:
-            with open(file_CSV_Path, 'rt', encoding='UTF-8') as csv_File:
-                csv_reader = csv.DictReader(csv_File)
-                for csvRows in csv_reader:
-                    csvTodict.append(csvRows)
+            csvToList = []
+            for csvRows in csv.DictReader(csv_data):
+                csvToList.append(csvRows)
         except Exception as err:
             logger.exception(f"Upload CSV from {user} => " + str(err))
 
-        # Make web routing json body
+        # Make response json body
         try:
-            coordMiddle_lat = csvTodict[int(len(csvTodict) / 2)]["latitude"]
-            coordMiddle_lng = csvTodict[int(len(csvTodict) / 2)]["longitude"]
-            output_Json = { 'serial_id' : user, 'incomming_time' : time, 'middle_point' : { 'latitude' : coordMiddle_lat, 'longitude': coordMiddle_lng } ,'flight_record' :  csvTodict }
+            coordMiddle_lat = csvToList[int(len(csvToList) / 2)]["latitude"]
+            coordMiddle_lng = csvToList[int(len(csvToList) / 2)]["longitude"]
+            output_Json = { 'serial_id'      : user,
+                            'incomming_time' : time,
+                            'middle_point'   : { 'latitude' : coordMiddle_lat, 'longitude': coordMiddle_lng },
+                            'flight_record'  :  csvToList }
+            output_Object = json.dumps(output_Json, indent = 4, ensure_ascii = True)
         except Exception as err:
             logger.exception(f"Make json from {user} => " + str(err))
 
-        # Insert Cache DB
+        # Insert DB
         dbInserted = insert_Flight_Record(user, time, coordMiddle_lat, coordMiddle_lng, user + "-" + time + ".json")
         if not dbInserted:
             logger.critical(f"Upload CSV from {user} => Insert DB Fail. [{user}|{time}|{coordMiddle_lat}|{coordMiddle_lng}|{user}-{time}.json].")
         
-        # Store flight record(JSON)
-        json_object = None
+        # Save flight record(JSON)
         try:
             with open(file_JSON_Path, 'wt', encoding = 'UTF-8') as json_File:
-                json_object = json.dumps(output_Json, indent = 4, ensure_ascii = True)
-                json_File.write(json_object)
+                json_File.write(output_Object)
         except Exception as err:
             logger.exception(f"Upload CSV from {user} => " + str(err))
 
         # httpx send http post for call another api
         if(not settings.SERVER_TEST_MODE):
-            post_Result = httpx.post(settings.POST_URL, json = json.loads(json_object))
+            post_Result = httpx.post(settings.POST_URL, json = json.loads(output_Object))
             if post_Result.status_code != httpx.codes.OK:
                 logger.error(f"HTTP POST to Web Service({user}) => Fail...." + post_Result.text)
             else:

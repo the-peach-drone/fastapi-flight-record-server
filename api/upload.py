@@ -1,8 +1,9 @@
-from fastapi     import APIRouter, File, UploadFile, HTTPException
-from datetime    import datetime
-from loguru      import logger
-from core.thread import threadQueue
-from core.config import Settings
+from fastapi           import APIRouter, File, UploadFile, HTTPException, Request
+from fastapi.responses import PlainTextResponse
+from datetime          import datetime
+from loguru            import logger
+from core.thread       import threadQueue
+from core.config       import Settings
 
 # FastAPI Router
 router = APIRouter()
@@ -35,4 +36,4 @@ async def csvUpload(user, csv: UploadFile = File(...)):
     # Insert thread
     thread.insert_Queue(user, file_Time, file_CSV)
 
-    return 'CSV uploaded.'
+    return PlainTextResponse("ok")
