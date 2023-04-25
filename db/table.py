@@ -7,8 +7,12 @@ settings = Settings()
 
 def check_Table():
     sql_Check = """
-                    SELECT COUNT(*) FROM sqlite_master Where name = "flightCache"
-                """
+                    SELECT COUNT(*) 
+                    FROM information_schema.TABLES 
+                    WHERE 
+                        TABLE_SCHEMA = "{}" 
+                        AND TABLE_NAME = "{}"
+                """.format(settings.DB_NAME, settings.DB_TABLE)
     try:
         con    = con_DB()
         cursor = con.cursor()
@@ -17,6 +21,8 @@ def check_Table():
     except Exception as err:
         logger.error(str(err))
         return False
+    finally:
+        con.close()
     
     if result[0] == 1:
         return True
@@ -25,21 +31,23 @@ def check_Table():
 
 def create_Table():
     sql_Create = """
-                    CREATE TABLE flightCache (
-                        id             integer primary key,
+                    CREATE TABLE {} (
+                        id             integer primary key auto_increment,
                         serial         text    not null,
                         incomming_time text    not null,
                         mid_lat        text    not null, 
                         mid_lng        text    not null,
                         flieName       text    not null
                     )
-                 """
+                 """.format(settings.DB_TABLE)
     try:
         con = con_DB()
-        con.execute(sql_Create)
-        con.close()
+        cursor = con.cursor()
+        cursor.execute(sql_Create)
     except Exception as err:
         logger.error(str(err))
         return False
+    finally:
+        con.close()
     
     return True

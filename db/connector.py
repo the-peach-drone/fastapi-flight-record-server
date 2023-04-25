@@ -1,7 +1,7 @@
 from loguru      import logger
 from core.config import Settings
 
-import sqlite3
+import pymysql
 
 # Server Setting
 settings = Settings()
@@ -9,8 +9,11 @@ settings = Settings()
 def con_DB():
     # DB connect
     try:
-        connector = sqlite3.connect(settings.DB_PATH)
-        connector.execute("PRAGMA cache_size=10000")
+        connector = pymysql.connect(host=settings.DB_HOST,
+                                    user=settings.DB_USER,
+                                    password=settings.DB_PASS,
+                                    db=settings.DB_NAME,
+                                    charset='utf8')
     except Exception as err:
         logger.error(str(err))
 

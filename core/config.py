@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     # Json config
     config_Path = os.path.join(MAIN_PATH, "core", "config.json")
-    config = json.load(open(config_Path))
+    config      = json.load(open(config_Path))
 
     # Path Setting
     LOG_PATH      = os.path.join(MAIN_PATH,    "log")
@@ -17,8 +17,12 @@ class Settings(BaseSettings):
     CSV_DIR_PATH  = os.path.join(STORAGE_PATH, "flight_csv")
 
     # DB Setting
-    DB_NAME = config["db_name"]
-    DB_PATH = os.path.join(STORAGE_PATH, DB_NAME)
+    DB_HOST  = config["db_host"]
+    DB_USER  = config["db_user"]
+    DB_PASS  = config["db_pass"]
+    DB_PORT  = config["db_port"]
+    DB_NAME  = config["db_name"]
+    DB_TABLE = config["db_table"]
 
     # POST URL Setting
     POST_URL = config["api_url"]

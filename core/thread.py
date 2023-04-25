@@ -1,6 +1,7 @@
-from loguru      import logger
-from core.config import Settings
-from db.insert   import insert_Flight_Record
+from loguru       import logger
+from core.config  import Settings
+from db.connector import con_DB
+from db.crud    import insert_Flight_Record
 
 import time, threading, queue
 import io, os, json, httpx, csv
@@ -19,6 +20,10 @@ class threadQueue(threading.Thread):
         super().__init__()
         self.data_Queue = queue.Queue()
         self.event = threading.Event()
+        self.dbConnect = con_DB()
+
+    def __del__(self):
+        self.dbConnect.close()
 
     def run(self, *args, **kwargs):
         while True:
@@ -70,7 +75,7 @@ class threadQueue(threading.Thread):
             logger.exception(f"Make json from {user} => " + str(err))
 
         # Insert DB
-        dbInserted = insert_Flight_Record(user, time, coordMiddle_lat, coordMiddle_lng, user + "-" + time + ".json")
+        dbInserted = insert_Flight_Record(self.dbConnect, user, time, coordMiddle_lat, coordMiddle_lng, user + "-" + time + ".json")
         if not dbInserted:
             logger.critical(f"Upload CSV from {user} => Insert DB Fail. [{user}|{time}|{coordMiddle_lat}|{coordMiddle_lng}|{user}-{time}.json].")
         
