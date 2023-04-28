@@ -1,7 +1,7 @@
 """
 실행방법
 
-gunicorn --bind 0:5555 main:app --worker-class uvicorn.workers.UvicornWorker --daemon
+gunicorn --bind 0.0.0.0:5555 main:app --worker-class uvicorn.workers.UvicornWorker
 
 """
 from fastapi                 import FastAPI
