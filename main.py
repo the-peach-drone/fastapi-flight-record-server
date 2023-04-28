@@ -7,12 +7,14 @@ from threading               import Event
 
 import uvicorn
 import api.upload as upload
+import api.getUser as getUser
 
 # App init
 app = FastAPI()
 
 # Add API router
 app.include_router(upload.router)
+app.include_router(getUser.router)
 
 # Data processing thread
 thread = threadQueue()
