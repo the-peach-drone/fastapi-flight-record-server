@@ -8,7 +8,10 @@ import os, sys
 # Server Setting
 settings = Settings()
 
-def init_Server():
+def init_Server(main_path: str):
+    # Set Main Path
+    settings.setMainPath(main_path)
+
     # Logger set
     config_path = os.path.join(settings.MAIN_PATH, "core", "logger_config.json")
     logger = CustomizeLogger.make_logger(config_path)

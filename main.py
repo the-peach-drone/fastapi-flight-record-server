@@ -1,3 +1,9 @@
+"""
+실행방법
+
+gunicorn --bind 0:5555 main:app --worker-class uvicorn.workers.UvicornWorker --daemon
+
+"""
 from fastapi                 import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru                  import logger
@@ -5,7 +11,7 @@ from core.thread             import threadQueue
 from core.init               import init_Server
 from threading               import Event
 
-import uvicorn
+import sys, os, __main__
 import api.upload as upload
 import api.getUser as getUser
 
@@ -30,10 +36,19 @@ app.add_middleware(
 
 @app.on_event("startup")
 def startup_server():
-    # Data process thread start
-    thread.start()
+    main_path = os.path.dirname(os.path.realpath(__file__))
 
-    logger.success("Server init success. Server Ready...")
+    # Server init
+    try:
+        isInited = init_Server(main_path)
+        if not isInited:
+            raise Exception('Server Init Fail.')
+        else :
+            # Data process thread start
+            thread.start()
+            logger.success("Server init success. Server Ready...")
+    except Exception as err:
+        sys.exit(4)
 
 @app.on_event("shutdown")
 def shutdown_server():
@@ -45,11 +60,3 @@ def shutdown_server():
 @app.get('/')
 def rootIndex():
     return "Please read API docs."
-
-if __name__ == "__main__":
-    isInited = init_Server()
-    if not isInited:
-        logger.critical("server init failed. Please check log.")
-    else:
-        # Do not run with reload option
-        uvicorn.run("main:app", host="0.0.0.0", port=5555, access_log=False)

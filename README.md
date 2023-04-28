@@ -8,7 +8,7 @@
 ```
 pip3 install -r requirements.txt
 ```
-2. main.py 실행
+2. gunicorn으로 실행
 ```
-python3 main.py
+gunicorn --bind 0:5555 main:app --worker-class uvicorn.workers.UvicornWorker --daemon
 ```

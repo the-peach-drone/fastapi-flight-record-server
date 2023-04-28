@@ -10,6 +10,7 @@ import io, os, json, httpx, csv
 settings = Settings()
 
 # Data processing thread(Singleton)
+# TODO : refactoring db connector
 class threadQueue(threading.Thread):
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, "_instance"):

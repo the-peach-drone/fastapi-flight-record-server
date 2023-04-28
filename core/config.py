@@ -3,7 +3,9 @@ import os, json, __main__
 
 class Settings(BaseSettings):
     # Main Path
-    MAIN_PATH     = os.path.dirname(os.path.realpath(__main__.__file__))
+    # MAIN_PATH     = os.path.dirname(os.path.realpath(__main__.__file__))
+    # TODO : refactoring main path set
+    MAIN_PATH = ""
 
     # Json config
     config_Path = os.path.join(MAIN_PATH, "core", "config.json")
@@ -29,3 +31,6 @@ class Settings(BaseSettings):
 
     # POST TEST MODE
     SERVER_TEST_MODE = config["test_mode"]
+
+    def setMainPath(self, path:str):
+        self.MAIN_PATH = path
