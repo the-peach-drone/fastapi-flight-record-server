@@ -10,5 +10,15 @@ pip3 install -r requirements.txt
 ```
 2. gunicorn으로 실행
 ```
-gunicorn --bind 0:5555 main:app --worker-class uvicorn.workers.UvicornWorker --daemon
+gunicorn --bind 0:45555 main:app --worker-class uvicorn.workers.UvicornWorker --daemon
+```
+
+> 도커를 이용할 시
+1. 도커 이미지 빌드
+```
+docker build -f DockerFile -t [이미지 이름] .
+```
+2. 도커 이미지 실행
+```
+docker run -it --rm --network host -v [레포지토리 폴더 절대경로]:/fastapi-flight-record-server [이미지 이름]
 ```

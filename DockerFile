@@ -1,0 +1,24 @@
+# python:3.10.11의 이미지로 부터
+FROM python:3.10.11
+
+# 제작자 및 author 기입
+LABEL maintainer="penkins@thpeach.kr"
+
+# 파이썬 버퍼 사용 X
+ENV PYTHONUNBUFFERED 0
+
+# 레포지토리 클론
+RUN git clone https://github.com/the-peach-drone/fastapi-flight-record-server.git
+
+# directory로 이동
+WORKDIR /fastapi-flight-record-server
+
+# config 복사
+COPY core/config.json core/config.json
+
+# 필요한 의존성 file들 설치
+RUN pip3 install -r requirements.txt
+RUN pip3 install python-multipart
+
+# container가 구동되면 실행
+ENTRYPOINT [ "gunicorn", "-b", "0.0.0.0:45555", "main:app", "-k", "uvicorn.workers.UvicornWorker" ]
