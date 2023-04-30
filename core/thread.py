@@ -1,6 +1,5 @@
 from loguru       import logger
 from core.config  import Settings
-from db.connector import con_DB
 from db.crud      import insert_Flight_Record
 
 import time, threading, queue
@@ -10,7 +9,6 @@ import io, os, json, httpx, csv
 settings = Settings()
 
 # Data processing thread(Singleton)
-# TODO : refactoring db connector
 class threadQueue(threading.Thread):
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, "_instance"):
@@ -21,10 +19,6 @@ class threadQueue(threading.Thread):
         super().__init__()
         self.data_Queue = queue.Queue()
         self.event = threading.Event()
-        self.dbConnect = con_DB()
-
-    def __del__(self):
-        self.dbConnect.close()
 
     def run(self, *args, **kwargs):
         while True:
@@ -67,16 +61,19 @@ class threadQueue(threading.Thread):
         try:
             coordMiddle_lat = csvToList[int(len(csvToList) / 2)]["latitude"]
             coordMiddle_lng = csvToList[int(len(csvToList) / 2)]["longitude"]
+
             output_Json = { 'serial_id'      : user,
                             'incomming_time' : time,
                             'middle_point'   : { 'latitude' : coordMiddle_lat, 'longitude': coordMiddle_lng },
-                            'flight_record'  :  csvToList }
+                            'flight_record'  :  csvToList 
+                          }
+            
             output_Object = json.dumps(output_Json, indent = 4, ensure_ascii = True)
         except Exception as err:
             logger.exception(f"Make json from {user} => " + str(err))
 
         # Insert DB
-        dbInserted = insert_Flight_Record(self.dbConnect, user, time, coordMiddle_lat, coordMiddle_lng, user + "-" + time + ".json")
+        dbInserted = insert_Flight_Record(user, time, coordMiddle_lat, coordMiddle_lng, user + "-" + time + ".json")
         if not dbInserted:
             logger.critical(f"Upload CSV from {user} => Insert DB Fail. [{user}|{time}|{coordMiddle_lat}|{coordMiddle_lng}|{user}-{time}.json]")
         
