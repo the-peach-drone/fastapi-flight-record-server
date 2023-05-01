@@ -36,11 +36,9 @@ app.add_middleware(
 
 @app.on_event("startup")
 def startup_server():
-    main_path = os.path.dirname(os.path.realpath(__file__))
-
     # Server init
     try:
-        isInited = init_Server(main_path)
+        isInited = init_Server()
         if not isInited:
             raise Exception('Server Init Fail.')
         else :
