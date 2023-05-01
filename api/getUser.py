@@ -1,14 +1,10 @@
 from fastapi           import APIRouter, HTTPException
 from loguru            import logger
-from core.config       import Settings
 from db.crud           import get_Record_Serial
 from db.connector      import con_DB
 
 # FastAPI Router
 router = APIRouter()
-
-# Server Setting
-settings = Settings()
 
 # Get Record Serial
 @router.get("/get_serial")
