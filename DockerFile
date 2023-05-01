@@ -4,9 +4,6 @@ FROM python:3.10.11
 # 제작자 및 author 기입
 LABEL maintainer="penkins@thpeach.kr"
 
-# Watchtower 업데이트 제외
-LABEL com.centurylinklabs.watchtower.enable="false"
-
 # 파이썬 버퍼 사용 X
 ENV PYTHONUNBUFFERED 0
 
@@ -20,9 +17,6 @@ RUN git clone https://github.com/the-peach-drone/fastapi-flight-record-server.gi
 
 # 레포지토리로 이동
 WORKDIR /fastapi-flight-record-server
-
-# config 복사
-COPY core/config.json core/config.json
 
 # container가 구동되면 실행
 ENTRYPOINT [ "gunicorn", "-b", "0.0.0.0:45555", "main:app", "-k", "uvicorn.workers.UvicornWorker" ]

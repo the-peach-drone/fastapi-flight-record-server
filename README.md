@@ -18,7 +18,12 @@ gunicorn --bind 0:45555 main:app --worker-class uvicorn.workers.UvicornWorker --
 ```
 docker build -f DockerFile -t [이미지 이름] .
 ```
-2. 도커 이미지 실행
-```
-docker run -it --rm --network host -v [레포지토리 폴더 절대경로]:/fastapi-flight-record-server [이미지 이름]
-```
+2. docker-compose의 환경변수 설정을 이용하여 실행.
+* MARIADBHOST  : DB 호스트 주소
+* MARIADBUSER  : DB 계정
+* MARIADBPASS  : DB 비밀번호
+* MARIADBPORT  : DB 접속 포트
+* MARIADBNAME  : DB 이름
+* MARIADBTABLE : DB 테이블 이름
+* WEBAPIENDPOINT : 외부 API 주소
+* APISERVERTEST : 서버 테스트 모드(API 요청 날리지 않음)
