@@ -91,6 +91,7 @@ class threadQueue(threading.Thread):
         else:
             response_Error = json.loads(post_Result.text)['error']
             if(response_Error == ''):
+                logger.info(post_Result.text)
                 logger.success(f"HTTP POST to Web Service({user}) => Success....")
             else:
                 logger.error(f"HTTP POST to Web Service({user}) => Fail...." + response_Error)
