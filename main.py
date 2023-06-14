@@ -9,18 +9,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from loguru                  import logger
 from core.thread             import threadQueue
 from core.init               import init_Server
-from threading               import Event
 
-import sys, os, __main__
+import sys, __main__
 import api.upload as upload
-import api.getUser as getUser
 
 # App init
 app = FastAPI()
 
 # Add API router
 app.include_router(upload.router)
-app.include_router(getUser.router)
 
 # Data processing thread
 thread = threadQueue()

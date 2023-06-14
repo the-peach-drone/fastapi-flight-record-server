@@ -1,5 +1,4 @@
 from pydantic import BaseSettings
-from pathlib  import Path
 import os, __main__
 
 class Settings(BaseSettings):
@@ -31,11 +30,6 @@ class Settings(BaseSettings):
     DB_USER  = os.environ.get('MARIADBUSER', 'USER')
     DB_PASS  = os.environ.get('MARIADBPASS', 'PASS')
     DB_PORT  = os.environ.get('MARIADBPORT',  3306)
-    DB_NAME  = os.environ.get('MARIADBNAME',  'DB_NAME')
-    DB_TABLE = os.environ.get('MARIADBTABLE', 'DB_TABLE_NAME')
 
     # POST URL Setting
     POST_URL = os.environ.get('WEBAPIENDPOINT', 'API_URI')
-
-    # POST TEST MODE
-    SERVER_TEST_MODE = os.environ.get('APISERVERTEST', True)

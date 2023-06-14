@@ -3,13 +3,9 @@ from fastapi.responses import PlainTextResponse
 from datetime          import datetime
 from loguru            import logger
 from core.thread       import threadQueue
-from core.config       import Settings
 
 # FastAPI Router
 router = APIRouter()
-
-# Server Setting
-settings = Settings()
 
 # Data processing thread
 thread = threadQueue()
@@ -31,7 +27,7 @@ async def csvUpload(user, csv: UploadFile = File(...)):
     file_Time = datetime.now().strftime('%Y%m%d%H%M%S')
 
     # Read csv request
-    file_CSV = csv.file.read()
+    file_CSV = await csv.read()
 
     # Insert thread
     thread.insert_Queue(user, file_Time, file_CSV)

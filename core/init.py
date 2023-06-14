@@ -1,6 +1,4 @@
 from core.logger import CustomizeLogger
-from db.table    import check_Table
-from db.table    import create_Table
 from core.config import Settings
 
 import os, sys
@@ -56,18 +54,6 @@ def init_Server():
         except OSError as err:
             logger.exception(f"Error in creating directory. - {err}")
             return False
-
-    # DB Init(Table Check)
-    logger.info("Check Flight Cache Table...")
-    if check_Table() == False:
-        logger.error("Flight Cache Table not exist. Attemp to create table.")
-        dbCreated = create_Table()
-        if dbCreated != True:
-            logger.critical("Flight Cache Table create fail.")
-            return False
-        else:
-            logger.success("Flight Cache Table create success.")
-            return True
-    else:
-        logger.success("Flight Cache Table check success.")
-        return True
+    
+    # Init process completes normally
+    return True
