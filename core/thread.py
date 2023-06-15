@@ -2,9 +2,10 @@ from loguru       import logger
 from core.config  import Settings
 
 import time, threading, queue
-import io, os, json, httpx, csv
+import io, os, json, csv, requests
 
 # Database import
+from sqlalchemy import exc
 from db import crud, models, schemas
 from db.database import SessionLocal, engine
 
@@ -80,25 +81,27 @@ class threadQueue(threading.Thread):
             logger.exception(f"Upload CSV from {user} => " + str(err))
 
         # Insert DB
-        db = SessionLocal()
         try:
+            db = SessionLocal()
             crud.create_record(db, schemas.Record(serial=user, incomming_time=time, fileName=file_JSON_Name))
-        except Exception as err:
+        except exc.SQLAlchemyError as err:
             logger.critical(f"Upload CSV from {user} => Insert DB Fail. [{user}|{file_JSON_Name}]")
         finally:
             db.close()
+        
+        # Python Requests module send POST
+        headers = { 'Content-type' : 'application/json', 'Accept' : 'text/plain' }
+        response = requests.post(settings.POST_URL, output_Object, headers=headers)
 
-        # httpx send http post for call another api
-        # TODO : change to python request module
-        post_Result = httpx.post(settings.POST_URL, json = json.loads(output_Object))
-        if post_Result.status_code != httpx.codes.OK:
-            logger.error(f"HTTP POST to Web Service({user}) => Fail...." + post_Result.text)
+        # POST response code check
+        if not response.ok:
+            logger.error(f"HTTP POST to Web Service({user}) => Fail...." + response.text)
         else:
-            response_Error = json.loads(post_Result.text)['error']
-            if(response_Error == ''):
-                logger.info(post_Result.text)
+            res_Json_Body = response.json()
+            if(res_Json_Body['error'] == ''):
+                logger.info(response.text)
                 logger.success(f"HTTP POST to Web Service({user}) => Success....")
             else:
-                logger.error(f"HTTP POST to Web Service({user}) => Fail...." + response_Error)
+                logger.error(f"HTTP POST to Web Service({user}) => Fail...." + res_Json_Body)
 
         logger.success(f"Upload CSV from {user} => Success....")
