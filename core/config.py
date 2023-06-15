@@ -10,13 +10,9 @@ class Settings(BaseSettings):
     
     def __init__(self):
         super().__init__()
-        # Get parent dir path
-        pathList = os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)
-        pathList.pop()
-        self.MAIN_PATH = os.path.join("/", *pathList)
     
     # Main Path
-    MAIN_PATH = ""
+    MAIN_PATH = os.path.join("/", *os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)[0:-1])
 
     # Path Setting
     LOG_PATH      = os.path.join(MAIN_PATH,    "log")
