@@ -9,8 +9,14 @@ ENV PYTHONUNBUFFERED 0
 
 # 필요한 의존성 file들 설치
 RUN pip3 install 'uvicorn[standard]'
+RUN pip3 install python-multipart SQLAlchemy
 RUN pip3 install fastapi pydantic loguru httpx PyMySQL gunicorn
-RUN pip3 install python-multipart
+
+# Add User
+RUN groupadd -g 1001 fastapiuser
+RUN useradd -rm -d /home/fastapiuser -s /bin/bash -g fastapiuser -G sudo -u 1001 fastapiuser
+USER fastapiuser
+WORKDIR /home/fastapiuser
 
 # 레포지토리 클론
 RUN git clone https://github.com/the-peach-drone/fastapi-flight-record-server.git
