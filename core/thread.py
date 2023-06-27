@@ -90,18 +90,18 @@ class threadQueue(threading.Thread):
             db.close()
         
         # Python Requests module send POST
-        headers = { 'Content-type' : 'application/json', 'Accept' : 'text/plain' }
-        response = requests.post(settings.POST_URL, output_Object, headers=headers)
+        url = "http://dpcm2.vigeotech.com/pjt/workRecordApi/workRecord.do"
+        response = requests.post(url, json=output_Json)
 
         # POST response code check
         if not response.ok:
-            logger.error(f"HTTP POST to Web Service({user}) => Fail...." + response.text)
+            logger.error(f"HTTP POST to Web Service({user}) => Fail...." + str(response.status_code) + response.text)
         else:
             res_Json_Body = response.json()
             if(res_Json_Body['error'] == ''):
                 logger.info(response.text)
                 logger.success(f"HTTP POST to Web Service({user}) => Success....")
             else:
-                logger.error(f"HTTP POST to Web Service({user}) => Fail...." + res_Json_Body)
+                logger.error(f"HTTP POST to Web Service({user}) => Fail...." + res_Json_Body['error'])
 
         logger.success(f"Upload CSV from {user} => Success....")
