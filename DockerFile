@@ -10,7 +10,7 @@ ENV PYTHONUNBUFFERED 0
 # 필요한 의존성 file들 설치
 RUN pip3 install 'uvicorn[standard]'
 RUN pip3 install python-multipart SQLAlchemy
-RUN pip3 install fastapi pydantic loguru httpx PyMySQL gunicorn
+RUN pip3 install fastapi pydantic loguru httpx PyMySQL gunicorn mariadb
 
 # Add User
 RUN groupadd -g 1001 fastapiuser
