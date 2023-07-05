@@ -90,8 +90,7 @@ class threadQueue(threading.Thread):
             db.close()
         
         # Python Requests module send POST
-        url = "http://dpcm2.vigeotech.com/pjt/workRecordApi/workRecord.do"
-        response = requests.post(url, json=output_Json)
+        response = requests.post(settings.POST_URL, json=output_Json)
 
         # POST response code check
         if not response.ok:

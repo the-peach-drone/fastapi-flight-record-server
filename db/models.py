@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String
 from db.database import Base
 
 class Record(Base):
-    __tablename__  = "record_data"
+    __tablename__  = "flightCache"
     
     record_id      = Column(Integer, primary_key=True, autoincrement=True)
     serial         = Column(String,  nullable=False)

@@ -7,11 +7,9 @@ from core.config                import Settings
 settings = Settings()
 
 # TODO : MariaDB URL
-MARIADB_DATABASE_URL = "mariadb+mariadbconnector://" + settings.DB_USER + ":" + settings.DB_PASS + "@" + settings.DB_HOST + ":" + settings.DB_PORT + "/FlightRecord"
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
+MARIADB_DATABASE_URL = "mariadb+mariadbconnector://" + settings.DB_USER + ":" + settings.DB_PASS + "@" + settings.DB_HOST + ":" + settings.DB_PORT + "/flight_record"
 
-# engine = create_engine(MARIADB_DATABASE_URL)
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(MARIADB_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()

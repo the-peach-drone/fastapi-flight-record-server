@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     DB_HOST  = os.environ.get('MARIADBHOST', 'localhost')
     DB_USER  = os.environ.get('MARIADBUSER', 'USER')
     DB_PASS  = os.environ.get('MARIADBPASS', 'PASS')
-    DB_PORT  = os.environ.get('MARIADBPORT',  '3306')
+    DB_PORT  = os.environ.get('MARIADBPORT', '3306')
 
     # POST URL Setting
     POST_URL = os.environ.get('WEBAPIENDPOINT', 'API_URI')
