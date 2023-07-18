@@ -55,5 +55,10 @@ def init_Server():
             logger.exception(f"Error in creating directory. - {err}")
             return False
     
-    # Init process completes normally
+    # Init process completes normally, print env variable
+    logger.info("====== ENV Variable ======")
+    logger.info("Maria DB Host : " + settings.DB_HOST)
+    logger.info("Maria DB Port : " + settings.DB_PORT)
+    logger.info("Maria DB USER : " + settings.DB_USER)
+    logger.info("Web API EndPoint : " + settings.POST_URL)
     return True
