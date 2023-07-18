@@ -13,8 +13,8 @@ from core.init               import init_Server
 import sys, __main__
 import api.upload as upload
 
-# App init
-app = FastAPI()
+# App init, redoc & docs disable
+app = FastAPI(docs_url=None, redoc_url=None)
 
 # Add API router
 app.include_router(upload.router)
@@ -51,7 +51,3 @@ def shutdown_server():
     thread.event.set()
 
     logger.info("Server stop success. Closing Server...")
-
-@app.get('/')
-def rootIndex():
-    return "Please read API docs."
