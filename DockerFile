@@ -20,7 +20,7 @@ RUN git clone https://github.com/the-peach-drone/fastapi-flight-record-server.gi
 WORKDIR /fastapi-flight-record-server
 
 # 의존성 패키지 설치
-RUN pip3 install -r requirements.txt
+RUN sudo pip3 install -r requirements.txt
 
 # container가 구동되면 실행
 ENTRYPOINT [ "gunicorn", "-b", "0.0.0.0:45555", "main:app", "-k", "uvicorn.workers.UvicornWorker" ]
