@@ -7,6 +7,10 @@ LABEL maintainer="penkins@thpeach.kr"
 # 파이썬 버퍼 사용 하지 않음
 ENV PYTHONUNBUFFERED 0
 
+# Install Package
+RUN apt-get -y update
+RUN apt-get -y install vim git iputils-ping iproute2 net-tools
+
 # FastAPI 설치
 RUN pip3 install 'uvicorn[standard]'
 
