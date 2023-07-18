@@ -84,6 +84,7 @@ class threadQueue(threading.Thread):
         try:
             db = SessionLocal()
             crud.create_record(db, schemas.Record(serial=user, incomming_time=time, fileName=file_JSON_Name))
+            logger.success(f"Upload CSV from {user}  => Insert DB Success....")
         except exc.SQLAlchemyError as err:
             logger.critical(f"Upload CSV from {user} => Insert DB Fail. [{user}|{file_JSON_Name}]" + str(err))
         finally:
