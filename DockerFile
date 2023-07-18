@@ -24,7 +24,7 @@ WORKDIR /home/fastapiuser
 RUN git clone https://github.com/the-peach-drone/fastapi-flight-record-server.git
 
 # 레포지토리로 이동
-WORKDIR /fastapi-flight-record-server
+WORKDIR /home/fastapiuser/fastapi-flight-record-server
 
 # Requirments 설치
 RUN pip3 install -r requirements.txt
