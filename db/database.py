@@ -9,7 +9,7 @@ settings = Settings()
 # TODO : MariaDB URL
 MARIADB_DATABASE_URL = "mariadb+mariadbconnector://" + settings.DB_USER + ":" + settings.DB_PASS + "@" + settings.DB_HOST + ":" + settings.DB_PORT + "/flight_record"
 
-engine = create_engine(MARIADB_DATABASE_URL)
+engine = create_engine(MARIADB_DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
