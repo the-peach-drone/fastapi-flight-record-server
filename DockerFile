@@ -1,17 +1,11 @@
 # python:3.10.11의 이미지로 부터
 FROM python:3.10.11
 
-# 제작자 및 author 기입
-LABEL maintainer="penkins@thpeach.kr"
-
-# 파이썬 버퍼 사용 X
+# 파이썬 버퍼 사용 해제
 ENV PYTHONUNBUFFERED 0
 
-# 필요한 의존성 file들 설치
-RUN pip3 install 'uvicorn[standard]'
-RUN pip3 install python-multipart SQLAlchemy
-RUN pip3 install fastapi pydantic loguru httpx PyMySQL gunicorn mariadb
-RUN pip3 install mariadb==1.0.11
+# Author 기입
+LABEL maintainer="penkins@thpeach.kr"
 
 # Add User
 RUN groupadd -g 1001 fastapiuser
@@ -24,6 +18,9 @@ RUN git clone https://github.com/the-peach-drone/fastapi-flight-record-server.gi
 
 # 레포지토리로 이동
 WORKDIR /fastapi-flight-record-server
+
+# 의존성 패키지 설치
+RUN pip3 install -r requirements.txt
 
 # container가 구동되면 실행
 ENTRYPOINT [ "gunicorn", "-b", "0.0.0.0:45555", "main:app", "-k", "uvicorn.workers.UvicornWorker" ]
